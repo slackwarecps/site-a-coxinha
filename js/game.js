@@ -80,8 +80,8 @@ function create() {
         playDrumSound(self);
 
         let plusOne = self.add.text(pointer.x, pointer.y, '+1', {
-            fontSize: '32px',
-            fill: '#e67e22',
+            fontSize: '64px',
+            fill: '#3f19d7',
             fontStyle: 'bold',
             stroke: '#fff',
             strokeThickness: 4
