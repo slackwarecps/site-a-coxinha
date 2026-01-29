@@ -1,44 +1,22 @@
-# Site A Coxinha
+# Coxinha Clicker
 
-Um projeto interativo e divertido dedicado à apreciação da Coxinha.
+Um jogo viciante onde seu objetivo é acumular o maior número de coxinhas possível!
 
-## Funcionalidades
+## Como Jogar
 
-- **Visualização Centralizada:** Uma bela imagem de uma coxinha dourada centralizada na tela.
-- **Interatividade Sonora:** Ao clicar na coxinha, um som de "grito de cabra" é reproduzido (ou um fallback de voz sintetizada "Bééééé").
-- **Efeitos Visuais:**
-  - **Cursor Gigante:** O cursor do mouse se transforma em uma seta gigante ao passar sobre a coxinha.
-  - **Tooltip:** Uma mensagem "Clique na coxinha" aparece ao passar o mouse.
-  - **Chuva de Texto:** Ao clicar, a palavra "COXINHA" surge e flutua para o topo da tela.
-  - **Sombra:** A imagem possui uma sombra elegante.
-
-## Estrutura do Projeto
-
-```
-/Users/fabioalvaropereira/workspaces/www/site-coxinha/
-├── images/           # Pasta contendo os arquivos de imagem
-│   ├── coxinha.jpg
-│   ├── coxinha2.png
-│   └── coxinha3.png
-├── cabra.ogg         # Arquivo de áudio (efeito sonoro)
-├── index.html        # Estrutura principal da página
-├── style.css         # Estilos e animações
-├── script.js         # Lógica de interação (áudio, cursor, animações)
-└── README.md         # Documentação do projeto
-```
-
-## Como Executar
-
-1. Navegue até a pasta do projeto.
-2. Abra o arquivo `index.html` em seu navegador de preferência.
+1.  Abra o arquivo `index.html` no seu navegador.
+2.  Clique na **Coxinha** no centro da tela.
+3.  Veja seu contador de coxinhas subir!
+4.  Cada clique gera um efeito visual de "+1".
 
 ## Tecnologias
 
-- HTML5
-- CSS3 (Flexbox, Animations, Transitions)
-- JavaScript (DOM Manipulation, Audio API, Speech Synthesis API)
+- **Phaser 3:** Engine utilizada para renderização, input e animações (tweens).
+- **HTML5/CSS3:** Estrutura e estilização básica do container.
 
-## Notas
+## Estrutura de Arquivos
 
-- O arquivo de áudio `cabra.ogg` é utilizado para o efeito sonoro.
-- Caso o arquivo de áudio não seja carregado, a API de síntese de voz do navegador é usada como backup.
+- `index.html`: Ponto de entrada.
+- `script.js`: Lógica do jogo (Cena do Phaser).
+- `style.css`: Estilização centralizada.
+- `images/`: Recursos gráficos.

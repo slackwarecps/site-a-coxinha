@@ -4,65 +4,13 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f8f9fa;
-}
-.container {
-    text-align: center;
-}
-img {
-    max-width: 100%;
-    height: auto;
-    transition: transform 0.3s ease;
-}
-img:hover {
-    z-index: 2;
-    position: relative;
-}
-.container {
-    position: relative;
-    display: inline-block;
-}
-.tooltip {
-    visibility: hidden;
-    width: 140px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -70px;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-.container:hover .tooltip {
-    visibility: visible;
-    opacity: 1;
+    background-color: #2c3e50; /* Um fundo mais escuro para destacar o jogo */
+    overflow: hidden;
+    font-family: Arial, sans-serif;
 }
 
-@keyframes floatUp {
-    0% {
-        bottom: -50px;
-        opacity: 1;
-    }
-    100% {
-        bottom: 100%;
-        opacity: 0;
-    }
-}
-
-.floating-text {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 3rem;
-    font-weight: bold;
-    color: #d35400; /* Cor de coxinha bem assada */
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    pointer-events: none;
-    animation: floatUp 3s linear forwards;
-    z-index: 1000;
+#game-container {
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    border-radius: 8px;
+    overflow: hidden;
 }
