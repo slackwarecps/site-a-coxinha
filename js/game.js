@@ -19,30 +19,29 @@ const game = new Phaser.Game(config);
 let score = 0;
 let scoreText;
 let coxinha;
+let sky;
 
 function preload() {
     this.load.image('coxinha', 'assets/images/coxinha.jpg');
+    this.load.image('sky', 'assets/images/ce2.avif');
 }
 
 function create() {
     const self = this;
 
     // --- Criação de Texturas Programáticas ---
-    
-    // Textura para Explosão (uma partícula amarela redonda)
     const graphics = this.make.graphics({ x: 0, y: 0, add: false });
-    graphics.fillStyle(0xffa500, 1); // Laranja/Amarelo
+    graphics.fillStyle(0xffa500, 1);
     graphics.fillCircle(10, 10, 10);
     graphics.generateTexture('flare', 20, 20);
-
     // --- Fim Criação ---
 
-    scoreText = this.add.text(16, 16, 'Coxinhas: 0', { 
-        fontSize: '32px', 
-        fill: '#000',
-        fontFamily: 'Arial, sans-serif'
-    });
+    // Adiciona o céu (Background)
+    sky = this.add.image(0, 0, 'sky');
+    sky.setOrigin(0, 0); // Facilita o redimensionamento
+    resizeSky(this);
 
+    // Calcula o centro da tela
     const centerX = this.scale.width / 2;
     const centerY = this.scale.height / 2;
 
@@ -50,13 +49,21 @@ function create() {
     resizeCoxinha(this);
     coxinha.setInteractive();
 
+    scoreText = this.add.text(16, 16, 'Coxinhas: 0', { 
+        fontSize: '32px', 
+        fill: '#000',
+        fontFamily: 'Arial, sans-serif'
+    });
+
     this.scale.on('resize', function (gameSize) {
+        // Atualiza posição da coxinha
         coxinha.setPosition(gameSize.width / 2, gameSize.height / 2);
+        
+        // Redimensiona assets
+        resizeSky(self);
         resizeCoxinha(self);
     });
 
-    // Configura o sistema de partículas para a explosão
-    // No Phaser 3.60+, a sintaxe do emitter mudou ligeiramente, mas vamos usar uma compatível
     const emitter = this.add.particles(0, 0, 'flare', {
         lifespan: 500,
         speed: { min: 150, max: 250 },
@@ -70,11 +77,8 @@ function create() {
         score++;
         scoreText.setText('Coxinhas: ' + score);
 
-        // --- Efeito Sonoro (Sintetizado) ---
-        // Passamos a cena para usar o contexto de áudio do Phaser
         playDrumSound(self);
 
-        // --- Efeito Visual: Texto +1 ---
         let plusOne = self.add.text(pointer.x, pointer.y, '+1', {
             fontSize: '32px',
             fill: '#e67e22',
@@ -93,10 +97,8 @@ function create() {
             onComplete: () => plusOne.destroy()
         });
 
-        // --- Efeito Visual: Explosão de Partículas ---
         emitter.explode(16, pointer.x, pointer.y);
 
-        // --- Animação da Coxinha ---
         const currentScale = coxinha.scaleX;
         self.tweens.add({
             targets: coxinha,
@@ -112,30 +114,38 @@ function create() {
     coxinha.on('pointerout', () => self.game.canvas.style.cursor = 'default');
 }
 
+function resizeSky(scene) {
+    if (!sky) return;
+    // Estica o céu para cobrir toda a tela (displayWidth/displayHeight)
+    sky.displayWidth = scene.scale.width;
+    sky.displayHeight = scene.scale.height;
+}
+
 function resizeCoxinha(scene) {
+    if (!coxinha) return;
     const padding = 50;
     const availableWidth = scene.scale.width - padding;
     const availableHeight = scene.scale.height - padding;
     
+    // Reseta escala para 1 para pegar as dimensões originais corretamente
     coxinha.setScale(1);
     
     const ratioX = availableWidth / coxinha.width;
     const ratioY = availableHeight / coxinha.height;
+    // Garante que não aumenta mais que o original e mantém proporção
     const scale = Math.min(ratioX, ratioY, 1); 
 
     coxinha.setScale(scale);
 }
 
-// Função para sintetizar um som de "bum" (bombo/tambor) usando Web Audio API do Phaser
+// Contexto de áudio global para evitar criar múltiplos contextos (o que trava no mobile)
+let globalAudioCtx;
+
 function playDrumSound(scene) {
     try {
-        // Usa o contexto de áudio já gerenciado pelo Phaser
-        // Isso evita erros de "AudioContext not allowed to start" e conflitos
         const audioCtx = scene.sound.context;
-        
         if (!audioCtx) return;
 
-        // Se por acaso ainda estiver suspenso (ex: carregamento muito rápido), tenta resumir
         if (audioCtx.state === 'suspended') {
             audioCtx.resume().catch(() => {});
         }
@@ -148,12 +158,10 @@ function playDrumSound(scene) {
 
         const now = audioCtx.currentTime;
 
-        // Frequência baixa caindo rápido (kick drum style)
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(150, now);
         oscillator.frequency.exponentialRampToValueAtTime(0.01, now + 0.5);
 
-        // Volume caindo rápido
         gainNode.gain.setValueAtTime(1, now);
         gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
 
