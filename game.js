@@ -14,27 +14,27 @@ let scoreText;
 
 function preload() {
     // Carrega uma imagem de exemplo
-    this.load.image('cookie', 'images/coxinha.jpg');
+    this.load.image('coxinha', 'images/coxinha.jpg');
 }
 
 function create() {
-    // Adiciona o texto do placar
-    scoreText = this.add.text(16, 16, 'Cookies: 0', { fontSize: '32px', fill: '#fff' });
+    
+    scoreText = this.add.text(16, 16, 'coxinhas: 0', { fontSize: '32px', fill: '#fff' });
 
-    // Adiciona o biscoito no meio da tela
-    let cookie = this.add.sprite(400, 300, 'cookie').setInteractive();
+    
+    let cookie = this.add.sprite(400, 300, 'coxinha').setInteractive();
 
-    // Evento de clique com efeito visual
+    
     cookie.on('pointerdown', function () {
         score += 1;
-        scoreText.setText('Cookies: ' + score);
+        scoreText.setText('coxinhas: ' + score);
         
         // Efeito de "pulo" usando o sistema de Tweens do Phaser
-        this.tweens.add({
-            targets: cookie,
-            scale: 1.2,
-            duration: 50,
-            yoyo: true // Volta ao tamanho original
-        });
+        // this.tweens.add({
+        //     targets: coxinha,
+        //     scale: 2.5,
+        //     duration: 75,
+        //     yoyo: true // Volta ao tamanho original
+        // });
     }, this);
 }

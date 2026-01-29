@@ -71,7 +71,8 @@ function create() {
         scoreText.setText('Coxinhas: ' + score);
 
         // --- Efeito Sonoro (Sintetizado) ---
-        playDrumSound();
+        // Passamos a cena para usar o contexto de áudio do Phaser
+        playDrumSound(self);
 
         // --- Efeito Visual: Texto +1 ---
         let plusOne = self.add.text(pointer.x, pointer.y, '+1', {
@@ -125,30 +126,39 @@ function resizeCoxinha(scene) {
     coxinha.setScale(scale);
 }
 
-// Função para sintetizar um som de "bum" (bombo/tambor) usando Web Audio API
-function playDrumSound() {
+// Função para sintetizar um som de "bum" (bombo/tambor) usando Web Audio API do Phaser
+function playDrumSound(scene) {
     try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
+        // Usa o contexto de áudio já gerenciado pelo Phaser
+        // Isso evita erros de "AudioContext not allowed to start" e conflitos
+        const audioCtx = scene.sound.context;
         
-        const audioCtx = new AudioContext();
+        if (!audioCtx) return;
+
+        // Se por acaso ainda estiver suspenso (ex: carregamento muito rápido), tenta resumir
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
+        }
+        
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
 
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
 
+        const now = audioCtx.currentTime;
+
         // Frequência baixa caindo rápido (kick drum style)
         oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        oscillator.frequency.setValueAtTime(150, now);
+        oscillator.frequency.exponentialRampToValueAtTime(0.01, now + 0.5);
 
         // Volume caindo rápido
-        gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        gainNode.gain.setValueAtTime(1, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
 
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.5);
+        oscillator.start(now);
+        oscillator.stop(now + 0.5);
     } catch (e) {
         console.warn("Erro ao tocar som sintetizado:", e);
     }

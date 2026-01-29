@@ -1,4 +1,4 @@
-# Coxinha Clicker
+# A Coxinha 
 
 Um jogo viciante onde seu objetivo é acumular o maior número de coxinhas possível!
 
