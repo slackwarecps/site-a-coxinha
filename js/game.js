@@ -71,7 +71,8 @@ function create() {
         scoreText.setText('Coxinhas: ' + score);
 
         // --- Efeito Sonoro (Sintetizado) ---
-        playDrumSound();
+        // Passamos a cena para usar o contexto de áudio do Phaser
+        playDrumSound(self);
 
         // --- Efeito Visual: Texto +1 ---
         let plusOne = self.add.text(pointer.x, pointer.y, '+1', {
@@ -125,32 +126,27 @@ function resizeCoxinha(scene) {
     coxinha.setScale(scale);
 }
 
-// Contexto de áudio global para evitar criar múltiplos contextos (o que trava no mobile)
-let globalAudioCtx;
-
-// Função para sintetizar um som de "bum" (bombo/tambor) usando Web Audio API
-function playDrumSound() {
+// Função para sintetizar um som de "bum" (bombo/tambor) usando Web Audio API do Phaser
+function playDrumSound(scene) {
     try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
+        // Usa o contexto de áudio já gerenciado pelo Phaser
+        // Isso evita erros de "AudioContext not allowed to start" e conflitos
+        const audioCtx = scene.sound.context;
         
-        // Inicializa o contexto apenas uma vez (Singleton)
-        if (!globalAudioCtx) {
-            globalAudioCtx = new AudioContext();
-        }
+        if (!audioCtx) return;
 
-        // Importante para Mobile: Se o contexto estiver suspenso, retome-o
-        if (globalAudioCtx.state === 'suspended') {
-            globalAudioCtx.resume();
+        // Se por acaso ainda estiver suspenso (ex: carregamento muito rápido), tenta resumir
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
         }
         
-        const oscillator = globalAudioCtx.createOscillator();
-        const gainNode = globalAudioCtx.createGain();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
 
         oscillator.connect(gainNode);
-        gainNode.connect(globalAudioCtx.destination);
+        gainNode.connect(audioCtx.destination);
 
-        const now = globalAudioCtx.currentTime;
+        const now = audioCtx.currentTime;
 
         // Frequência baixa caindo rápido (kick drum style)
         oscillator.type = 'sine';
