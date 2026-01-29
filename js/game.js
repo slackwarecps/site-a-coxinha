@@ -34,6 +34,14 @@ function create() {
     graphics.fillStyle(0xffa500, 1);
     graphics.fillCircle(10, 10, 10);
     graphics.generateTexture('flare', 20, 20);
+
+    // Cria uma aura suave (efeito gradiente)
+    const auraGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+    for (let i = 0; i < 15; i++) {
+        auraGraphics.fillStyle(0xffffff, 0.05); // Muito transparente
+        auraGraphics.fillCircle(64, 64, 64 - (i * 4));
+    }
+    auraGraphics.generateTexture('aura-bg', 128, 128);
     // --- Fim Criação ---
 
     // Adiciona o céu (Background)
@@ -44,6 +52,22 @@ function create() {
     // Calcula o centro da tela
     const centerX = this.scale.width / 2;
     const centerY = this.scale.height / 2;
+
+    // Adiciona a aura atrás
+    const aura = this.add.image(centerX, centerY, 'aura-bg');
+    aura.setAlpha(0.2); // Mais transparente
+    aura.setBlendMode('ADD');
+
+    // Pulsação da aura
+    this.tweens.add({
+        targets: aura,
+        scale: { from: 2, to: 4 },
+        alpha: { from: 0.1, to: 0.75 }, // Pulsação mais sutil
+        duration: 3000, // Mais lenta
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+    });
 
     coxinha = this.add.image(centerX, centerY, 'coxinha');
     resizeCoxinha(this);
@@ -56,8 +80,11 @@ function create() {
     });
 
     this.scale.on('resize', function (gameSize) {
-        // Atualiza posição da coxinha
-        coxinha.setPosition(gameSize.width / 2, gameSize.height / 2);
+        // Atualiza posição da coxinha e da aura
+        const cx = gameSize.width / 2;
+        const cy = gameSize.height / 2;
+        coxinha.setPosition(cx, cy);
+        aura.setPosition(cx, cy);
         
         // Redimensiona assets
         resizeSky(self);
